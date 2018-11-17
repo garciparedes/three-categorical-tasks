@@ -80,9 +80,9 @@ cat("Running EM...\n")
 lambda <- matrix(rep(0, iters * k), iters, k)
 ratios <- matrix(rep(0, iters * k), iters, k)
 for (r in 1:iters) {
-  opt <- OptimizePoissonMixtureEM(x, k)
-  lambda[r, ] <- opt$lambda
-  ratios[r, ] <- opt$ratios
+  opt.em <- OptimizePoissonMixtureEM(x, k)
+  lambda[r, ] <- opt.em$lambda
+  ratios[r, ] <- opt.em$ratios
   cat('Iteration: ',r, ', Steps: ', opt$steps, ', Lambda: ',  lambda[r, ], ', p: ', ratios[r, ],'\n')
 }
 

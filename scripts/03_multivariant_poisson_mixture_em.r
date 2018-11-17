@@ -13,19 +13,19 @@ k <- 3
 # Cases
 n <- 1000
 
-p <- matrix(c(0.1, 0.5,
-              0.6, 0.2,
-              0.3, 0.3),
-            3, 2, byrow = TRUE)
+p <- c(0.1,
+       0.6,
+       0.3)
 
 lambda <- matrix(c( 1, 10,
                     5, 50,
                    10, 70),
                  3, 2, byrow = TRUE)
 
-x <- sapply(1:d, function(i) {
-    sapply(1:k, function(j){
-      rpois(n * p[j, i], lambda[j, i])
+x <-
+  sapply(1:d, function(j) {
+    sapply(1:k, function(i){
+      rpois(n * p[i], lambda[i, j])
     }) %>%
     unlist()
   }) %>%
@@ -93,12 +93,11 @@ OptimizeMultiVariantPoissonMixtureEM <- function(x, k, d) {
   result <- list(lambda = lambda,
                  group = b,
                  steps = i,
-                 ratios = p
-               )
+                 ratios = p)
   return(result)
 }
 
-a <- OptimizeMultiVariantPoissonMixtureEM(x, k, d)
+(opt.em <- OptimizeMultiVariantPoissonMixtureEM(x, k, d))
 
 
-plot(x, col = a$group + 1)
+plot(x, col = opt.em$group + 1)
