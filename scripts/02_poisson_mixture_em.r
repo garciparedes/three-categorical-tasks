@@ -4,35 +4,15 @@ rm(list = ls())
 
 library(magrittr)
 
-k <- 3
+k <- 5
 n <- 1000
-p <- c(0.3, 0.4)
-lambda <- c(1, 5, 10)
-x1 <- rpois(n * p[1], lambda[1])
-x2 <- rpois(n * p[2], lambda[2])
-x3 <- rpois(n * (1 - sum(p)), lambda[3])
-x <- c(x1, x2, x3)
-
-LogLikeliHood <- function(p, lambda, x) {
-  sum(log(p * dpois(x, lambda[1:(k - 1)]) + (1 - sum(p)) * dpois(x, lambda[k])))
-}
-
-LogLikeliHoodTheta <- function(theta, x) {
-  p <- theta[1:(k - 1)]
-  lambda <- theta[k:(2 * k - 1)]
-  logL <- LogLikeliHood(p, lambda, x)
-  return(logL)
-}
-
-NegativeLogLikelihoodTheta <- function(...) {
-  - LogLikeliHoodTheta(...)
-}
-
-# theta.initial <- c(0.3, 0.4, 1, 50, 100)
-# opt <- optim(theta.initial, NegativeLogLikelihoodTheta, x = x, method= "L-BFGS-B",
-#              lower = rep(10e-4, (k - 1) + k), upper = c(rep(1 - 10e-4, k -1), rep(Inf, k)))
-#
-# (theta.hat <- opt$par)
+p <- c(0.2, 0.2, 0.2, 0.2, 0.2)  # por simplicidad sum(p) = 1
+lambda <- c(1, 5, 10, 15, 20)
+x <- (1:k) %>%
+  sapply(function(i) {
+    rpois(n * p[i], lambda[i])
+  }) %>%
+  unlist()
 
 
 LogLikeliHoodPoisson <- function(lambda, x) {
@@ -51,7 +31,7 @@ OptimizeLambda <- function(x) {
   # opt <- optim(runif(1), NegativeLogLikeliHoodPoisson, x = x,
   #              lower = 10e-4, upper = Inf, method = "L-BFGS-B")
   # lambda.hat <- opt$par
-  
+
   lambda.hat <- mean(x)
   return(lambda.hat)
 }
@@ -80,10 +60,16 @@ OptimizePoissonMixtureEM <- function(x, k) {
     b.old <- b
     b <- CalculateB(x, lambda)
   }
+
+  p <- (1:k) %>%
+    sapply(function(i) {
+      mean(b == i)
+    })
+
   result <- list(lambda = lambda,
                  group = b,
                  steps = i,
-                 ratios = prop.table(table(b)))
+                 ratios = p)
   return(result)
 }
 
