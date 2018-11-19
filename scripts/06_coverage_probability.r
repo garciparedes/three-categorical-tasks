@@ -39,26 +39,29 @@ LikelihoodRatioConfidenceInterval <- function(y, n, alpha) {
     2 * (LogLikelihood(p.hat, y, n) - LogLikelihood(p, y, n)) - qchisq(1 - alpha, df = 1)
   }
 
-  confidence.interval <- c(uniroot(f, c(0,   p.hat))$root,
-                           uniroot(f, c(p.hat, 1))$root)
+  # obligatory tryCatch() block to fix y = 0 or y = n cases.
+  confidence.interval <- tryCatch({
+    c(uniroot(f, c(0,   p.hat))$root,
+      uniroot(f, c(p.hat, 1))$root)
+  }, error=function(e) {rep(NA, 2)})
 
   return(confidence.interval)
 }
 
 
 Amplitude <- function(ci) {
-  mean(ci[, 2] - ci[, 1])
+  mean(ci[, 2] - ci[, 1], na.rm = TRUE)
 }
 
 
 Coverage <- function(ci, p) {
-  mean(ci[, 1] <= p & p <= ci[, 2])
+  mean(ci[, 1] <= p & p <= ci[, 2], na.rm = TRUE)
 }
 
 
 alpha <- 0.05
-p <- 0.3
-n <- 50
+p <- 0.1
+n <- 100
 
 iters <- 10000
 
@@ -75,7 +78,8 @@ for (i in 1:iters) {
 }
 confidence.intervals <- list(wald=wald.ci, score=score.ci, likelihood=likelihoodratio.ci)
 summarised.ci <- lapply(confidence.intervals, function(ci) {
-    data.frame(left=mean(ci[, 1]), right=mean(ci[, 2]), amplitude=Amplitude(ci), coverage=Coverage(ci, p))
+    data.frame(left=mean(ci[, 1], na.rm = TRUE), right=mean(ci[, 2], na.rm =TRUE),
+               amplitude=Amplitude(ci), coverage=Coverage(ci, p))
   }) %>%
   { do.call(rbind, .) }
 
