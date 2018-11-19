@@ -44,10 +44,10 @@ opt <- optim(theta.initial, NegativeLogLikelihoodTheta, x = x, method= "L-BFGS-B
 
 
 f <- function(p, theta, x, alpha) {
-  2 * (LogLikeliHoodTheta(theta, x) - LogLikeliHood(p, theta[2], theta[3], x)) - pchisq(1 - alpha / 2, df = 1)
+  2 * (LogLikeliHoodTheta(theta, x) - LogLikeliHood(p, theta[2], theta[3], x)) - qchisq(1 - alpha, df = 1)
 }
 
 alpha <- 0.05
 # Confidence Intervals
-c(uniroot(f, c(0, p.hat), theta = theta.hat, x = x, alpha = alpha)$root,
-  uniroot(f, c(p.hat, 1), theta = theta.hat, x = x, alpha = alpha)$root)
+c(uniroot(f, c(0, theta.hat[1]), theta = theta.hat, x = x, alpha = alpha)$root,
+  uniroot(f, c(theta.hat[1], 1), theta = theta.hat, x = x, alpha = alpha)$root)
