@@ -1,4 +1,11 @@
+##
+## Title: Cáculo de la Probabilidad de Cubrimiento y Amplitud para
+##        distintos intervalos de confianza sobre distribuciones Binomiales.
+##
 ## Author: Sergio García Prado
+##
+## Date: Noviembre de 2018
+##
 
 rm(list = ls())
 

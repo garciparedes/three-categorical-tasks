@@ -11,6 +11,7 @@
 ##        es posible hacer probar el funcionamiento en más dimensiones
 ##        variando dichos parámetros.
 ##
+
 rm(list = ls())
 
 library(magrittr)

@@ -10,6 +10,7 @@ rm(list = ls())
 
 library(magrittr)
 
+
 # Número de Mixturas.
 k <- 5
 
@@ -21,7 +22,6 @@ p <- c(0.2, 0.2, 0.2, 0.2, 0.2)  # por simplicidad sum(p) = 1
 
 # Parámetros Distribucionales.
 lambda <- c(1, 5, 10, 15, 20)
-
 
 # Muestra.
 x <- (1:k) %>%
@@ -105,6 +105,7 @@ OptimizePoissonMixtureEM <- function(x, k) {
   return(result)
 }
 
+
 ## Algoritmo EM.
 
 # Iteraciones.
@@ -119,6 +120,7 @@ for (r in 1:iters) {
   ratios[r, ] <- opt.em$ratios
   cat('Iteration: ',r, ', Steps: ', opt.em$steps, ', Lambda: ',  lambda[r, ], ', p: ', ratios[r, ],'\n')
 }
+
 
 ## Resultados.
 

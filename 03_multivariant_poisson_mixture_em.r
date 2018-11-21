@@ -16,6 +16,7 @@ rm(list = ls())
 
 library(magrittr)
 
+
 # Número de Dimensiones.
 d <- 2
 

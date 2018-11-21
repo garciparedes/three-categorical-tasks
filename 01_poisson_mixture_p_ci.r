@@ -9,6 +9,7 @@
 
 rm(list = ls())
 
+
 # Tamaño muestral.
 n <- 1000
 
