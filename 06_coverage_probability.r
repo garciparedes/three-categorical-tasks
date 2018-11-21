@@ -4,7 +4,10 @@ rm(list = ls())
 
 library(magrittr)
 
+
 WaldConfidenceInterval <- function(y, n, alpha) {
+  # Intervalo de Confianza de Wald.
+
   p.hat <- y / n
   z <- qnorm(1 - alpha / 2)
   confidence.interval <- p.hat + c(-1, 1) * z * sqrt(p.hat * (1 - p.hat) /n )
@@ -14,6 +17,8 @@ WaldConfidenceInterval <- function(y, n, alpha) {
 
 
 ScoreConfidenceInterval <- function(y, n, alpha) {
+  # Intervalo de Confianza de Score.
+
   p.hat <- y / n
   z <- qnorm(1 - alpha / 2)
 
@@ -26,11 +31,15 @@ ScoreConfidenceInterval <- function(y, n, alpha) {
 
 
 LogLikelihood <- function(p, y, n) {
+  # LogVerosimilitud de la distribución Binomial.
+
   y * log(p) + (n - y) * log(1 - p)
 }
 
 
 LikelihoodRatioConfidenceInterval <- function(y, n, alpha) {
+  # Intervalo de Confianza basado en el estadístico Razón de Verosimilitud.
+
   confidence.interval <- rep(0, 2)
 
   p.hat <- y / n
@@ -50,25 +59,37 @@ LikelihoodRatioConfidenceInterval <- function(y, n, alpha) {
 
 
 Amplitude <- function(ci) {
+  # Cálculo de la amplitud para cada intervalo de confianza.
+
   mean(ci[, 2] - ci[, 1], na.rm = TRUE)
 }
 
 
 Coverage <- function(ci, p) {
+  # Cálculo de la probabilidad de cubrimiento.
+
   mean(ci[, 1] <= p & p <= ci[, 2], na.rm = TRUE)
 }
 
 
+# Nivel de Confianza.
 alpha <- 0.05
+
+# Probabilidad de la distribución Binomial
 p <- 0.1
+
+# Tamaño de la distribución Binomial.
 n <- 100
 
+# Número de Iteracciones.
 iters <- 10000
 
+# Inicializamos matrices donde guardar los Intervalos de Confianza.
 wald.ci <- matrix(rep(0, iters * 2), iters, 2)
 score.ci <- matrix(rep(0, iters * 2), iters, 2)
 likelihoodratio.ci <- matrix(rep(iters * 2), iters, 2)
 
+# Calculamos los Intervalos de Confianza.
 for (i in 1:iters) {
   y <- rbinom(1, size = n, prob = p)
 
@@ -76,11 +97,19 @@ for (i in 1:iters) {
   score.ci[i, ] <- ScoreConfidenceInterval(y, n, alpha)
   likelihoodratio.ci[i, ] <- LikelihoodRatioConfidenceInterval(y, n, alpha)
 }
-confidence.intervals <- list(wald=wald.ci, score=score.ci, likelihood=likelihoodratio.ci)
+
+
+# Resultados.
+confidence.intervals <- list(wald=wald.ci,
+                             score=score.ci,
+                             likelihood=likelihoodratio.ci)
+
+# Resultados Resumidos.
 summarised.ci <- lapply(confidence.intervals, function(ci) {
     data.frame(left=mean(ci[, 1], na.rm = TRUE), right=mean(ci[, 2], na.rm =TRUE),
                amplitude=Amplitude(ci), coverage=Coverage(ci, p))
   }) %>%
   { do.call(rbind, .) }
 
+# Mostramos Resultados Resumidos.
 summarised.ci
